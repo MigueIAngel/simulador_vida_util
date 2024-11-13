@@ -22,8 +22,8 @@ class Torre:
         aisladores = self.aisladores
         cable_conductor = self.cable_conductor
         cable_guarda = self.cable_guarda
-        a, b, c, d, e = 0, 0, 0, 0, 0
         for año in range(años):
+            a, b, c, d, e = 0, 0, 0, 0, 0
             if estructura[0] > 0:
                 estructura[0] -= 1
             else:
@@ -106,7 +106,7 @@ class Torre:
 
 
 torre = Torre(estructura=[11,0,100], herrajes=[7,0,100], aisladores=[7,0,100], cable_conductor=[24,0,100], cable_guarda=[8,0,100])
-torre.proyeccion_años_v2()
+torre.proyeccion_años()
 print(torre.mostrar_años_restantes())
 print(torre.mostrar_renovaciones())
 print(torre.imprimir_costos())
