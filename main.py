@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.cm as cm
 años = int(input("digite la cantidad de años: "))
 ipc = float(input("digite el valor del IPC: "))
-
+techo = int(input("digite el valor del techo: "))
 class Elemento:
     def __init__(self, vida_remanente, costo, años_restantes):
         self.vida_remanente = vida_remanente
@@ -22,7 +22,33 @@ class Activo:
 
     def mostrar_años_restantes(self):
         return min(self.estructura.años_restantes, self.herrajes.años_restantes, self.aisladores.años_restantes, self.cable_conductor.años_restantes, self.cable_guarda.años_restantes)
-         
+    def mostrar_años_restantes_techo(self, techo):
+        if self.estructura.años_restantes < techo:
+            temp= self.estructura.años_restantes
+        else:
+            self.estructura.años_restantes = techo
+            temp= techo
+        if self.herrajes.años_restantes < techo:
+            temp= self.herrajes.años_restantes
+        else :
+            self.herrajes.años_restantes = techo
+        if self.aisladores.años_restantes < techo:
+            temp= self.aisladores.años_restantes
+        else:
+            self.aisladores.años_restantes = techo
+            temp = techo  
+        if self.cable_conductor.años_restantes < techo:
+            temp= self.cable_conductor.años_restantes
+        else:
+            self.cable_conductor.años_restantes = techo
+            temp = techo
+        if self.cable_guarda.años_restantes < techo:
+            temp= self.cable_guarda.años_restantes
+        else:
+            self.cable_guarda.años_restantes = techo
+            temp = techo
+        return temp
+    
     def mostrar_años(self):
         return self.estructura.años_restantes, self.herrajes.años_restantes, self.aisladores.años_restantes, self.cable_conductor.años_restantes, self.cable_guarda.años_restantes
     def mostrar_renovaciones(self):
@@ -72,6 +98,51 @@ class Activo:
                 cable_guarda.años_restantes = cable_guarda.vida_remanente
                 cable_guarda.años_restantes += 1
             self.costo[año] = {"estructura": a, "herrajes": b, "aisladores": c, "cable conductor": d, "cable guarda": e, "vida_remanente": self.mostrar_años_restantes()}
+    def proyeccion_años_techo(self, techo):
+        estructura = self.estructura
+        herrajes = self.herrajes
+        aisladores = self.aisladores
+        cable_conductor = self.cable_conductor
+        cable_guarda = self.cable_guarda
+        for año in range(años+1):
+            if año == 0 :
+                continue
+            a, b, c, d, e = 0, 0, 0, 0, 0
+            if estructura.años_restantes > 1:
+                estructura.años_restantes -= 1
+            else:
+                a = self.proyeccion_costo(año, estructura.costo)
+                estructura.años_restantes = estructura.vida_remanente * 2
+                estructura.años_restantes += 1
+
+            if herrajes.años_restantes > 1:
+                herrajes.años_restantes -= 1
+            else:
+                b = self.proyeccion_costo(año, herrajes.costo)
+                herrajes.años_restantes = herrajes.vida_remanente * 2
+                herrajes.años_restantes += 1
+
+            if aisladores.años_restantes > 1:
+                aisladores.años_restantes -= 1
+            else:
+                c = self.proyeccion_costo(año, aisladores.costo)
+                aisladores.años_restantes = aisladores.vida_remanente * 2
+                aisladores.años_restantes += 1
+
+            if cable_conductor.años_restantes > 1:
+                cable_conductor.años_restantes -= 1
+            else:
+                d = self.proyeccion_costo(año, cable_conductor.costo)
+                cable_conductor.años_restantes = cable_conductor.vida_remanente * 2 
+                cable_conductor.años_restantes += 1
+
+            if cable_guarda.años_restantes > 1:
+                cable_guarda.años_restantes -= 1
+            else:
+                e = self.proyeccion_costo(año, cable_guarda.costo)
+                cable_guarda.años_restantes = cable_guarda.vida_remanente * 2
+                cable_guarda.años_restantes += 1
+            self.costo[año] = {"estructura": a, "herrajes": b, "aisladores": c, "cable conductor": d, "cable guarda": e, "vida_remanente": self.mostrar_años_restantes_techo(techo)}
     def imprimir_costos(self):
         for key, value in self.costo.items():
             costos = {k: f"{v:.2f}" for k, v in value.items()}
@@ -113,7 +184,7 @@ cimentacion = Elemento(50, 1000000, 50)
 
 activo = Activo(estructura, herraje, aislador, cable_conductor, cable_guarda)
 
-activo.proyeccion_años()
+activo.proyeccion_años_techo(techo)
 activo.imprimir_costos()
 
 activo.grafica()
